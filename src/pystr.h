@@ -152,6 +152,10 @@ PyStr(std::string&& str) noexcept :
     const size_t length() const noexcept {
         return _m_str.length();
     }
+
+    bool empty() const noexcept {
+        return _m_str.empty();
+    }
     //Python str methods
     PyStr capitilize() const {
         std::string capitilized = _m_str;
@@ -207,6 +211,26 @@ PyStr(std::string&& str) noexcept :
         }
         return _cnt;
     }
+    
+    bool endswith(const PyStr& suffix, size_t _start = 0, size_t _end = std::string::npos) const noexcept{
+        if(suffix.empty())
+            return true;
+        if(_start >= _m_str.size() || (_end != std::string::npos && _end <= _start)){
+            return true;
+        } 
+        if(_end == std::string::npos){
+            _end = _m_str.length();
+        }
+        --_end;
+        auto _rit = suffix.rbegin();
+        for(;_rit != suffix.rend(); ++_rit, --_end){
+            if(_m_str[_end] != *_rit){
+                return false;
+            }
+        }
+        return true;
+    }
+
 };
 } //namespace pystr
 #endif
