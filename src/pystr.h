@@ -18,13 +18,13 @@ public:
     //ctors
     PyStr() {}
     PyStr(std::string const& str): _m_str(str) {}
-    PyStr(char const* c):_m_str(c) {}
-PyStr(std::string&& str) noexcept :
-    _m_str(str) {}
+    PyStr(char const* c): _m_str(c) {}
+    PyStr(std::string&& str) noexcept :
+        _m_str(str) {}
     PyStr(std::initializer_list<char> il) : _m_str(il) {}
     PyStr(const std::string& str, size_t pos, size_t len) : _m_str(str, pos, len) {}
-    PyStr(size_t n, char c) : _m_str(n,c) {}
-    PyStr(const char* s, size_t n) : _m_str(s,n) {}
+    PyStr(size_t n, char c) : _m_str(n, c) {}
+    PyStr(const char* s, size_t n) : _m_str(s, n) {}
     template<class InputIterator>
     PyStr(InputIterator first, InputIterator last) : _m_str(first, last) {}
 
@@ -65,11 +65,11 @@ PyStr(std::string&& str) noexcept :
     }
 
     PyStr& assign(const char* s, size_t n) {
-        _m_str.assign(s,n);
+        _m_str.assign(s, n);
         return *this;
     }
     PyStr& assign(size_t n, char c) {
-        _m_str.assign(n,c);
+        _m_str.assign(n, c);
         return *this;
     }
     template<class InputIterator>
@@ -132,12 +132,12 @@ PyStr(std::string&& str) noexcept :
     std::string::reverse_iterator rend() noexcept {
         return _m_str.rend();
     }
-	std::string::const_reverse_iterator crbegin() const noexcept {
-		return _m_str.crbegin();
-	}
-	std::string::const_reverse_iterator crend() const noexcept {
-		return _m_str.crend();
-	}
+    std::string::const_reverse_iterator crbegin() const noexcept {
+        return _m_str.crbegin();
+    }
+    std::string::const_reverse_iterator crend() const noexcept {
+        return _m_str.crend();
+    }
     std::string::const_reverse_iterator rbegin() const noexcept {
         return _m_str.crbegin();
     }
@@ -159,9 +159,9 @@ PyStr(std::string&& str) noexcept :
     //Python str methods
     PyStr capitilize() const {
         std::string capitilized = _m_str;
-        if(!capitilized.empty()) {
+        if (!capitilized.empty()) {
             for_each(capitilized.begin(), capitilized.end(), tolower);
-            if(islower(*capitilized.begin())) {
+            if (islower(*capitilized.begin())) {
                 *capitilized.begin() = toupper(*capitilized.begin());
             }
         }
@@ -169,7 +169,7 @@ PyStr(std::string&& str) noexcept :
     }
 
     PyStr center(const size_t& width, char fillchar = ' ') const {
-        if(width <= _m_str.size()) {
+        if (width <= _m_str.size()) {
             PyStr ret(_m_str);
             return std::move(ret);
         }
@@ -179,30 +179,30 @@ PyStr(std::string&& str) noexcept :
         std::copy(_m_str.begin(), _m_str.end(), _start);
         return std::move(ret);
     }
-    char& operator[](size_t pos){
+    char& operator[](size_t pos) {
         return _m_str[pos];
     }
-    const char& operator[](size_t pos) const{
+    const char& operator[](size_t pos) const {
         return _m_str[pos];
     }
 
-    size_t count(const PyStr& sub, size_t _start = 0, size_t _end = std::string::npos) const noexcept{
-        if(_start >= _m_str.size() || (_end != std::string::npos && _end <= _start)){
+    size_t count(const PyStr& sub, size_t _start = 0, size_t _end = std::string::npos) const noexcept {
+        if (_start >= _m_str.size() || (_end != std::string::npos && _end <= _start)) {
             return 0;
         }
-        if(_end == std::string::npos){
+        if (_end == std::string::npos) {
             _end = _m_str.length();
-        }     
+        }
         size_t _cnt = 0, _sub_len = sub.length();
         size_t i = _start, j = 0;
-        while(i <= _end - _sub_len){
-            for(j = 0; j < _sub_len; ++j){
-                if(sub[j] == _m_str[i+j])
+        while (i <= _end - _sub_len) {
+            for (j = 0; j < _sub_len; ++j) {
+                if (sub[j] == _m_str[i + j])
                     continue;
                 else
                     break;
             }
-            if(j == _sub_len){
+            if (j == _sub_len) {
                 ++_cnt;
                 i += _sub_len;
             } else {
@@ -211,24 +211,56 @@ PyStr(std::string&& str) noexcept :
         }
         return _cnt;
     }
-    
-    bool endswith(const PyStr& suffix, size_t _start = 0, size_t _end = std::string::npos) const noexcept{
-        if(suffix.empty())
+
+    bool endswith(const PyStr& suffix, size_t _start = 0, size_t _end = std::string::npos) const noexcept {
+        if (suffix.empty())
             return true;
-        if(_start >= _m_str.size() || (_end != std::string::npos && _end <= _start)){
+        if (_start >= _m_str.size() || (_end != std::string::npos && _end <= _start)) {
             return true;
-        } 
-        if(_end == std::string::npos){
+        }
+        if (_end == std::string::npos) {
             _end = _m_str.length();
         }
         --_end;
         auto _rit = suffix.rbegin();
-        for(;_rit != suffix.rend(); ++_rit, --_end){
-            if(_m_str[_end] != *_rit){
+        for (; _rit != suffix.rend(); ++_rit, --_end) {
+            if (_m_str[_end] != *_rit) {
                 return false;
             }
         }
         return true;
+    }
+
+    PyStr expandtabs(size_t tabsize = 8){
+        size_t i = 0, j = 0;
+        size_t _remain = 0;
+        size_t _sub_len = 0;
+        std::string _result;
+        while(i < _m_str.size()){
+            j = 0;
+            if(_m_str[i] == '\t'){
+                _result += std::string(tabsize, ' ');
+                ++i;
+                continue;
+            }
+            if(_m_str[i] == '\n'){
+                _result += '\n';
+                ++i;
+                continue;
+            }
+            while(j < _m_str.size() && _m_str[i+j] != '\t') ++j;
+            _sub_len = j;
+            if(_sub_len >= tabsize){
+                _remain = tabsize;
+            } else {
+                _remain = tabsize - _sub_len;
+            }
+            _result += _m_str.substr(i,_sub_len);
+            _result += std::string(_remain,' ');
+            std::cout << _remain << std::endl;
+            i += (j+1);
+        }
+        return std::move(PyStr(std::move(_result)));
     }
 
 };
