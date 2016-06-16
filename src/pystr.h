@@ -232,12 +232,12 @@ public:
     }
 
     PyStr expandtabs(size_t tabsize = 8){
-        size_t i = 0, j = 0;
+        size_t i = 0;
         size_t _remain = 0;
         size_t _sub_len = 0;
         std::string _result;
         while(i < _m_str.size()){
-            j = 0;
+            _sub_len = 0;
             if(_m_str[i] == '\t'){
                 _result += std::string(tabsize, ' ');
                 ++i;
@@ -248,8 +248,8 @@ public:
                 ++i;
                 continue;
             }
-            while(j < _m_str.size() && _m_str[i+j] != '\t') ++j;
-            _sub_len = j;
+            while(i+_sub_len < _m_str.size() && _m_str[i+_sub_len] != '\t')
+                ++_sub_len;
             if(_sub_len >= tabsize){
                 _remain = tabsize;
             } else {
@@ -257,8 +257,7 @@ public:
             }
             _result += _m_str.substr(i,_sub_len);
             _result += std::string(_remain,' ');
-            std::cout << _remain << std::endl;
-            i += (j+1);
+            i += (_sub_len+1);
         }
         return std::move(PyStr(std::move(_result)));
     }
