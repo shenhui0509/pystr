@@ -14,6 +14,15 @@ class PyStr
 {
 private:
     std::string _m_str;
+    bool _range_process(size_t& _start, size_t& _end){
+        if(_start > _m_str.size() || (_end != std::string::npos && _end <= _start)){
+            return false;
+        }
+        if(_end == std::string::npos){
+            _end = _m_str.size();
+        }
+        return true;
+    }
 public:
     //ctors
     PyStr() {}
@@ -261,7 +270,30 @@ public:
         }
         return std::move(PyStr(std::move(_result)));
     }
-
+    
+    size_t find(const PyStr& sub, size_t _start = 0, size_t _end = std::string::npos){
+        if(!_range_process(_start, _end)){
+            return std::string::npos;
+        }  
+        size_t i = 0, j = 0;
+        while(i < _m_str.size() && j < sub.size()){
+            if(_m_str[i] == sub[j]){
+                ++i;
+                ++j;
+                continue;
+            }
+            if(_m_str[i] != sub[j]){
+                ++i;
+                j = 0;
+                continue;
+            }
+        }
+        if(j == sub.size() && i <= _m_str.size()){
+            return i - j;
+        } else {
+            return std::string::npos;
+        }
+    }
 };
 } //namespace pystr
 #endif

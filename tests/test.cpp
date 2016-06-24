@@ -13,4 +13,8 @@ int main(){
     std::cout << pstr.count("aaa") << std::endl;
     pstr.assign("1\t22\t333\t4444\t\t\t\t55555\t\n11\t222\t3333\t444444444444444444444444444444444\t\n");
     std::cout << pstr.expandtabs() << std::endl;
+    pstr.assign("abcdbcdbcddd");
+    str.assign("bcd");
+    std::cout << pstr.find(str) <<std::endl;
+    std::cout << std::string::npos << std::endl;
 }
