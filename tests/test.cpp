@@ -17,4 +17,8 @@ int main(){
     str.assign("bcd");
     std::cout << pstr.find(str) <<std::endl;
     std::cout << std::string::npos << std::endl;
+    pstr.assign("*");
+    std::vector<pystr::PyStr> vec{"abc","bcd","cde","def"};
+    std::cout << pstr.join(vec) << std::endl;
+    std::cout << str.ljust(19,'*') << std::endl;
 }

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <algorithm>
+#include <vector>
 #include <cctype>
 #include <initializer_list>
 #include <iostream>
@@ -14,11 +15,11 @@ class PyStr
 {
 private:
     std::string _m_str;
-    bool _range_process(size_t& _start, size_t& _end){
-        if(_start > _m_str.size() || (_end != std::string::npos && _end <= _start)){
+    bool _range_process(size_t& _start, size_t& _end) {
+        if(_start > _m_str.size() || (_end != std::string::npos && _end <= _start)) {
             return false;
         }
-        if(_end == std::string::npos){
+        if(_end == std::string::npos) {
             _end = _m_str.size();
         }
         return true;
@@ -28,8 +29,8 @@ public:
     PyStr() {}
     PyStr(std::string const& str): _m_str(str) {}
     PyStr(char const* c): _m_str(c) {}
-    PyStr(std::string&& str) noexcept :
-        _m_str(str) {}
+PyStr(std::string&& str) noexcept :
+    _m_str(str) {}
     PyStr(std::initializer_list<char> il) : _m_str(il) {}
     PyStr(const std::string& str, size_t pos, size_t len) : _m_str(str, pos, len) {}
     PyStr(size_t n, char c) : _m_str(n, c) {}
@@ -240,26 +241,26 @@ public:
         return true;
     }
 
-    PyStr expandtabs(size_t tabsize = 8){
+    PyStr expandtabs(size_t tabsize = 8) {
         size_t i = 0;
         size_t _remain = 0;
         size_t _sub_len = 0;
         std::string _result;
-        while(i < _m_str.size()){
+        while(i < _m_str.size()) {
             _sub_len = 0;
-            if(_m_str[i] == '\t'){
+            if(_m_str[i] == '\t') {
                 _result += std::string(tabsize, ' ');
                 ++i;
                 continue;
             }
-            if(_m_str[i] == '\n'){
+            if(_m_str[i] == '\n') {
                 _result += '\n';
                 ++i;
                 continue;
             }
             while(i+_sub_len < _m_str.size() && _m_str[i+_sub_len] != '\t')
                 ++_sub_len;
-            if(_sub_len >= tabsize){
+            if(_sub_len >= tabsize) {
                 _remain = tabsize;
             } else {
                 _remain = tabsize - _sub_len;
@@ -270,29 +271,62 @@ public:
         }
         return std::move(PyStr(std::move(_result)));
     }
-    
-    size_t find(const PyStr& sub, size_t _start = 0, size_t _end = std::string::npos){
-        if(!_range_process(_start, _end)){
+
+    size_t find(const PyStr& sub, size_t _start = 0, size_t _end = std::string::npos) {
+        if(!_range_process(_start, _end)) {
             return std::string::npos;
-        }  
+        }
         size_t i = 0, j = 0;
-        while(i < _m_str.size() && j < sub.size()){
-            if(_m_str[i] == sub[j]){
+        while(i < _m_str.size() && j < sub.size()) {
+            if(_m_str[i] == sub[j]) {
                 ++i;
                 ++j;
                 continue;
             }
-            if(_m_str[i] != sub[j]){
+            if(_m_str[i] != sub[j]) {
                 ++i;
                 j = 0;
                 continue;
             }
         }
-        if(j == sub.size() && i <= _m_str.size()){
+        if(j == sub.size() && i <= _m_str.size()) {
             return i - j;
         } else {
             return std::string::npos;
         }
+    }
+
+    PyStr join(std::vector<PyStr> const& to_joined) {
+        std::string result;
+        auto _len = to_joined.size();
+        auto i = _len - _len;
+        for(; i < _len; ++i) {
+            result += to_joined[i].cpp_str();
+            if(i != _len - 1) {
+                result += _m_str;
+            }
+        }
+        return std::move(PyStr(std::move(result)));
+    }
+
+    PyStr ljust(size_t width, const char& fillchar = ' ') {
+        if(width <= size()) {
+            return *this;
+        }
+        std::string _raw = _m_str;
+        size_t _remain = width - size();
+        _raw += std::string(_remain, fillchar);
+        return std::move(PyStr(std::move(_raw)));
+    }
+
+    PyStr rjust(size_t width, const char& fillchar = ' ') {
+        if(width <= size()) {
+            return *this;
+        }
+        std::string _raw = _m_str;
+        size_t _remain = width - size();
+        _raw = std::string(_remain, fillchar) + _raw;
+return std::move(PyStr(std:move(_raw)));
     }
 };
 } //namespace pystr
