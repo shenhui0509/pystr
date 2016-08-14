@@ -51,7 +51,7 @@ inline bool startswith (const std::string &, const std::vector<std::string>&, si
 /* methods for string search
  * generally return the index if success otherwise return std::string::npos
  */
-inline size_type count (std::string &, const std::string &, size_type start = 0, size_type end = npos);
+inline size_type count (const std::string &, const std::string &, size_type start = 0, size_type end = npos);
 inline size_type find (const std::string &, const std::string &, size_type start = 0, size_type end = npos);
 inline size_type rfind (const std::string &, const std::string &, size_type start = 0, size_type end = npos);
 
